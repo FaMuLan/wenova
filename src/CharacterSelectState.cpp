@@ -6,6 +6,8 @@
 #include "MenuState.h"
 #include "BattleState.h"
 
+#include <cstring>
+
 #define FRAME_TIME 7.5
 
 #define N_PLAYERS 4
@@ -198,6 +200,7 @@ void CharacterSelectState::update(float delta){
 	}
 
 	planet.update(delta);
+	update_array(delta);
 }
 
 void CharacterSelectState::render(){
@@ -238,6 +241,7 @@ void CharacterSelectState::render(){
 	if(ready){
 		ready_to_fight.render(0, 0);
 	}
+	render_array();
 }
 
 bool CharacterSelectState::all_players_selected(){

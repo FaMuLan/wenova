@@ -143,6 +143,7 @@ void MenuState::update(float delta){
 	}
 
 	text_timer.update(delta);
+	update_array(delta);
 }
 
 void MenuState::render(){
@@ -161,6 +162,7 @@ void MenuState::render(){
 	else if(show_text){
 		start_option->render(0, 0);
 	}
+	render_array();
 }
 
 void MenuState::process_input(){

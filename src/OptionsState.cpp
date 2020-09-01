@@ -40,7 +40,7 @@ OptionsState::OptionsState(){
 	InputManager::get_instance()->map_keyboard_to_joystick(InputManager::MENU_MODE);
 }
 
-void OptionsState::update(float){
+void OptionsState::update(float delta){
 	process_input();
 
 	InputManager * input_manager = InputManager::get_instance();
@@ -176,6 +176,7 @@ void OptionsState::update(float){
 
 	// set back button position
 	options.back()->set_pos(FONT_X, FONT_Y, true, true);
+	update_array(delta);
 }
 
 void OptionsState::render(){
@@ -214,6 +215,7 @@ void OptionsState::render(){
 			sub_options[text][j]->render();
 		}
 	}
+	render_array();
 }
 
 void OptionsState::build_options(){
