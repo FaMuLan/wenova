@@ -47,11 +47,13 @@ private:
 	int offset_y;
 	float scale;
 	int keyboard_to_joystick_id;
+	int touch_to_joystick_id = 0;
 
 	int analogic_value = 20000;
 	int trigger_value = 32000;
 
 	void emulate_joystick(int key_id, bool state);
+	void emulate_joystick(int x, int y, bool state);
 	void reset_keyboard_to_joystick();
 public:
 	InputManager();

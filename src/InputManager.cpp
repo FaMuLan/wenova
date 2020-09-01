@@ -8,6 +8,21 @@
 
 #define FIRST_TIME 1492356064
 
+#define ABXY_CENTER_X 1145
+#define ABXY_CENTER_Y 610
+#define DPAD_CENTER_X 135
+#define DPAD_CENTER_Y 610
+#define TRIGGER_CENTER_X 640
+#define TRIGGER_CENTER_Y 120
+#define START_CENTER_X 640
+#define START_CENTER_Y 670
+#define BUTTON_DISTANCE 50
+#define DPAD_DISTANCE 35
+#define TRIGGER_DISTANCE_X 450
+#define TRIGGER_DISTANCE_Y 40
+#define START_DISTANCE_X 60
+#define START_DISTANCE_Y 20
+
 InputManager * InputManager::input_manager;
 
 const int InputManager::UP, InputManager::DOWN, InputManager::RIGHT, InputManager::LEFT;
@@ -94,6 +109,7 @@ void InputManager::update(){
 
 			case SDL_MOUSEBUTTONDOWN:
 				button_id = event.button.button;
+				emulate_joystick(mouse_x, mouse_y, true);
 				mouse_state[button_id] = true;
 				mouse_update[button_id] = update_counter;
 				break;
@@ -101,9 +117,18 @@ void InputManager::update(){
 			case SDL_MOUSEBUTTONUP:
 				button_id = event.button.button;
 				mouse_state[button_id] = false;
+				emulate_joystick(mouse_x, mouse_y, false);
 				mouse_update[button_id] = update_counter;
 				break;
-
+			case SDL_FINGERDOWN:
+				emulate_joystick(event.tfinger.x * 1280, event.tfinger.y * 720, true);
+				break;
+			case SDL_FINGERMOTION:
+				emulate_joystick(event.tfinger.x * 1280, event.tfinger.y * 720, true);
+				break;
+			case SDL_FINGERUP:
+				emulate_joystick(event.tfinger.x * 1280, event.tfinger.y * 720, false);
+				break;
 			case SDL_JOYAXISMOTION:
 				break;
 
@@ -326,6 +351,58 @@ void InputManager::emulate_joystick(int key_id, bool state){
 	}else if(keyboard_to_joystick_id >= 0){
 		joystick_state[keyboard_to_joystick_id][keyboard_to_joystick[key_id] - 1] = state;
 		joystick_update[keyboard_to_joystick_id][keyboard_to_joystick[key_id] - 1] = update_counter;
+	}
+}
+
+void InputManager::emulate_joystick(int x, int y, bool state){
+	if (x > DPAD_CENTER_X - 2 * DPAD_DISTANCE && y > DPAD_CENTER_Y - 2 * DPAD_DISTANCE && x < DPAD_CENTER_X + 2 * DPAD_DISTANCE && y < DPAD_CENTER_Y + 2 * DPAD_DISTANCE)
+	{
+		int axis_x = x - DPAD_CENTER_X;
+		int axis_y = y - DPAD_CENTER_Y;
+		joystick_state[touch_to_joystick_id][RIGHT] = axis_x > abs(axis_y) && state;
+		joystick_state[touch_to_joystick_id][LEFT] = -axis_x > abs(axis_y) && state;
+		joystick_update[touch_to_joystick_id][RIGHT] = update_counter;
+		joystick_update[touch_to_joystick_id][LEFT] = update_counter;
+
+		joystick_state[touch_to_joystick_id][DOWN] = axis_y > abs(axis_x) && state;
+		joystick_state[touch_to_joystick_id][UP] = -axis_y > abs(axis_x) && state;
+		joystick_update[touch_to_joystick_id][DOWN] = update_counter;
+		joystick_update[touch_to_joystick_id][UP] = update_counter;
+	}
+	if (x > ABXY_CENTER_X - 2 * BUTTON_DISTANCE && y > ABXY_CENTER_Y - 2 * BUTTON_DISTANCE && x < ABXY_CENTER_X + 2 * BUTTON_DISTANCE && y < ABXY_CENTER_Y + 2 * BUTTON_DISTANCE)
+	{
+		int axis_x = x - ABXY_CENTER_X;
+		int axis_y = y - ABXY_CENTER_Y;
+		joystick_state[touch_to_joystick_id][B] = axis_x > abs(axis_y) && state;
+		joystick_state[touch_to_joystick_id][X] = -axis_x > abs(axis_y) && state;
+		joystick_update[touch_to_joystick_id][B] = update_counter;
+		joystick_update[touch_to_joystick_id][X] = update_counter;
+
+		joystick_state[touch_to_joystick_id][A] = axis_y> abs(axis_x) && state;
+		joystick_state[touch_to_joystick_id][Y] = -axis_y> abs(axis_x) && state;
+		joystick_update[touch_to_joystick_id][A] = update_counter;
+		joystick_update[touch_to_joystick_id][Y] = update_counter;
+	}
+	if (y < TRIGGER_CENTER_Y + 2 * TRIGGER_DISTANCE_Y)
+	{
+		int axis_x = x - TRIGGER_CENTER_X;
+		int axis_y = y - TRIGGER_CENTER_Y;
+		joystick_state[touch_to_joystick_id][LT] = axis_x < 0 && axis_y < 0 && state;
+		joystick_state[touch_to_joystick_id][RT] = axis_x > 0 && axis_y < 0 && state;
+		joystick_state[touch_to_joystick_id][LB] = axis_x < 0 && axis_y > 0 && state;
+		joystick_state[touch_to_joystick_id][RB] = axis_x > 0 && axis_y > 0 && state;
+		joystick_update[touch_to_joystick_id][LT] = update_counter;
+		joystick_update[touch_to_joystick_id][RT] = update_counter;
+		joystick_update[touch_to_joystick_id][LB] = update_counter;
+		joystick_update[touch_to_joystick_id][RB] = update_counter;
+	}
+	if (x > START_CENTER_X - 2 * START_DISTANCE_X && y > START_CENTER_Y - 2 * START_DISTANCE_Y && x < START_CENTER_X + 2 * START_DISTANCE_X)
+	{
+		int axis_x = x - START_CENTER_X;
+		joystick_state[touch_to_joystick_id][SELECT] = axis_x < 0 && state;
+		joystick_state[touch_to_joystick_id][START] = axis_x > 0 && state;
+		joystick_update[touch_to_joystick_id][SELECT] = update_counter;
+		joystick_update[touch_to_joystick_id][START] = update_counter;
 	}
 }
 
