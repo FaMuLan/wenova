@@ -109,26 +109,29 @@ void InputManager::update(){
 
 			case SDL_MOUSEBUTTONDOWN:
 				button_id = event.button.button;
-				emulate_joystick(mouse_x, mouse_y, true);
 				mouse_state[button_id] = true;
 				mouse_update[button_id] = update_counter;
 				break;
-
+			
 			case SDL_MOUSEBUTTONUP:
 				button_id = event.button.button;
 				mouse_state[button_id] = false;
-				emulate_joystick(mouse_x, mouse_y, false);
 				mouse_update[button_id] = update_counter;
 				break;
+
 			case SDL_FINGERDOWN:
 				emulate_joystick(event.tfinger.x * 1280, event.tfinger.y * 720, true);
 				break;
+
 			case SDL_FINGERMOTION:
+				emulate_joystick((event.tfinger.x + event.tfinger.dx) * 1280, (event.tfinger.y + event.tfinger.dy) * 720 , false);
 				emulate_joystick(event.tfinger.x * 1280, event.tfinger.y * 720, true);
 				break;
+
 			case SDL_FINGERUP:
 				emulate_joystick(event.tfinger.x * 1280, event.tfinger.y * 720, false);
 				break;
+
 			case SDL_JOYAXISMOTION:
 				break;
 
@@ -355,8 +358,7 @@ void InputManager::emulate_joystick(int key_id, bool state){
 }
 
 void InputManager::emulate_joystick(int x, int y, bool state){
-	if (x > DPAD_CENTER_X - 2 * DPAD_DISTANCE && y > DPAD_CENTER_Y - 2 * DPAD_DISTANCE && x < DPAD_CENTER_X + 2 * DPAD_DISTANCE && y < DPAD_CENTER_Y + 2 * DPAD_DISTANCE)
-	{
+	if (x > DPAD_CENTER_X - 2 * DPAD_DISTANCE && y > DPAD_CENTER_Y - 2 * DPAD_DISTANCE && x < DPAD_CENTER_X + 2 * DPAD_DISTANCE && y < DPAD_CENTER_Y + 2 * DPAD_DISTANCE){
 		int axis_x = x - DPAD_CENTER_X;
 		int axis_y = y - DPAD_CENTER_Y;
 		joystick_state[touch_to_joystick_id][RIGHT] = axis_x > abs(axis_y) && state;
@@ -369,8 +371,7 @@ void InputManager::emulate_joystick(int x, int y, bool state){
 		joystick_update[touch_to_joystick_id][DOWN] = update_counter;
 		joystick_update[touch_to_joystick_id][UP] = update_counter;
 	}
-	if (x > ABXY_CENTER_X - 2 * BUTTON_DISTANCE && y > ABXY_CENTER_Y - 2 * BUTTON_DISTANCE && x < ABXY_CENTER_X + 2 * BUTTON_DISTANCE && y < ABXY_CENTER_Y + 2 * BUTTON_DISTANCE)
-	{
+	if (x > ABXY_CENTER_X - 2 * BUTTON_DISTANCE && y > ABXY_CENTER_Y - 2 * BUTTON_DISTANCE && x < ABXY_CENTER_X + 2 * BUTTON_DISTANCE && y < ABXY_CENTER_Y + 2 * BUTTON_DISTANCE){
 		int axis_x = x - ABXY_CENTER_X;
 		int axis_y = y - ABXY_CENTER_Y;
 		joystick_state[touch_to_joystick_id][B] = axis_x > abs(axis_y) && state;
@@ -383,8 +384,7 @@ void InputManager::emulate_joystick(int x, int y, bool state){
 		joystick_update[touch_to_joystick_id][A] = update_counter;
 		joystick_update[touch_to_joystick_id][Y] = update_counter;
 	}
-	if (y < TRIGGER_CENTER_Y + 2 * TRIGGER_DISTANCE_Y)
-	{
+	if (y < TRIGGER_CENTER_Y + 2 * TRIGGER_DISTANCE_Y){
 		int axis_x = x - TRIGGER_CENTER_X;
 		int axis_y = y - TRIGGER_CENTER_Y;
 		joystick_state[touch_to_joystick_id][LT] = axis_x < 0 && axis_y < 0 && state;
@@ -396,8 +396,7 @@ void InputManager::emulate_joystick(int x, int y, bool state){
 		joystick_update[touch_to_joystick_id][LB] = update_counter;
 		joystick_update[touch_to_joystick_id][RB] = update_counter;
 	}
-	if (x > START_CENTER_X - 2 * START_DISTANCE_X && y > START_CENTER_Y - 2 * START_DISTANCE_Y && x < START_CENTER_X + 2 * START_DISTANCE_X)
-	{
+	if (x > START_CENTER_X - 2 * START_DISTANCE_X && y > START_CENTER_Y - 2 * START_DISTANCE_Y && x < START_CENTER_X + 2 * START_DISTANCE_X){
 		int axis_x = x - START_CENTER_X;
 		joystick_state[touch_to_joystick_id][SELECT] = axis_x < 0 && state;
 		joystick_state[touch_to_joystick_id][START] = axis_x > 0 && state;
