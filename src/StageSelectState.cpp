@@ -7,6 +7,7 @@
 #include <string>
 
 #include <cstdlib>
+#include <ctime>
 
 using std::to_string;
 
@@ -71,6 +72,7 @@ void StageSelectState::update(float delta) {
 	}
 
 	planet.update(delta);
+	update_array(delta);
 }
 
 void StageSelectState::render() {
@@ -81,6 +83,7 @@ void StageSelectState::render() {
 	for(int i=0;i<n_stages;i++){
 		stage[i].render(i * 780 - stage_select * 780);
 	}
+	render_array();
 }
 
 void StageSelectState::update_stage_select(int increment) {
